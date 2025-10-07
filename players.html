@@ -52,27 +52,5 @@ async function pushData(data){
 
 async function loadPlayers(){
     const d = await fetchData();
-    document.getElementById("p1name").value = d.player1 || "";
-    document.getElementById("p1color").value = d.color1 || "#1E90FF";
-    document.getElementById("p1logo").value = d.logo1 || "";
-    document.getElementById("p2name").value = d.player2 || "";
-    document.getElementById("p2color").value = d.color2 || "#FF4500";
-    document.getElementById("p2logo").value = d.logo2 || "";
-}
+    document.get
 
-async function savePlayers(){
-    const d = await fetchData();
-    d.player1 = document.getElementById("p1name").value;
-    d.color1 = document.getElementById("p1color").value;
-    d.logo1 = document.getElementById("p1logo").value;
-    d.player2 = document.getElementById("p2name").value;
-    d.color2 = document.getElementById("p2color").value;
-    d.logo2 = document.getElementById("p2logo").value;
-    await pushData(d);
-    alert("Players updated successfully!");
-}
-
-loadPlayers();
-</script>
-</body>
-</html>
