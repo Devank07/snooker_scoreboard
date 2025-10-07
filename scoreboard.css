@@ -1,16 +1,14 @@
-/* Body & Layout */
 body {
   margin: 0;
-  background: transparent; /* for OBS overlay */
-  font-family: 'Arial', sans-serif;
-  color: #ffffff;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  color: #fff;
   display: flex;
   justify-content: space-around;
   align-items: center;
   height: 100vh;
 }
 
-/* Player container */
 .player {
   text-align: center;
   padding: 15px 20px;
@@ -19,7 +17,6 @@ body {
   min-width: 200px;
 }
 
-/* Player logo */
 .logo {
   width: 60px;
   height: 60px;
@@ -29,44 +26,38 @@ body {
   border: 2px solid #fff;
 }
 
-/* Player name */
 .name {
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 6px;
 }
 
-/* Score */
 .score {
   font-size: 2.2rem;
   font-weight: bold;
-  color: #00ff00; /* green by default */
+  color: #00ff00;
   margin-bottom: 4px;
   transition: all 0.2s ease;
 }
 
-/* Break score */
 .break {
   font-size: 1rem;
-  color: #ffea00; /* yellow */
+  color: #ffea00;
   margin-bottom: 4px;
 }
 
-/* Frames won */
 .frames {
   font-size: 1rem;
-  color: #00ffff; /* cyan */
+  color: #00ffff;
   margin-bottom: 4px;
 }
 
-/* Fouls */
 .fouls {
   font-size: 1rem;
-  color: #ff4444; /* red */
+  color: #ff4444;
   margin-bottom: 4px;
 }
 
-/* Flash animation for score updates */
 .flash {
   animation: flash 0.3s ease;
 }
@@ -77,16 +68,11 @@ body {
   100% { transform: scale(1); color: #00ff00; }
 }
 
-/* Customizable colors for each player (add class dynamically if needed) */
 .player.player1 .score { color: #1E90FF; }
 .player.player2 .score { color: #FF4500; }
 
-/* Responsive for smaller OBS windows */
 @media (max-width: 800px) {
-  .player {
-    padding: 10px 12px;
-    min-width: 150px;
-  }
+  .player { padding: 10px 12px; min-width: 150px; }
   .logo { width: 50px; height: 50px; }
   .name { font-size: 1.2rem; }
   .score { font-size: 1.8rem; }
