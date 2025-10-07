@@ -1,0 +1,18 @@
+{
+  "player1": "Player A",
+  "player2": "Player B",
+  "score1": 0,
+  "score2": 0,
+  "break1": 0,
+  "break2": 0,
+  "frames1": 0,
+  "frames2": 0,
+  "fouls1": 0,
+  "fouls2": 0,
+  "color1": "#1E90FF",
+  "color2": "#FF4500",
+  "logo1": "",
+  "logo2": "",
+  "turn": 1,
+  "bestof": 7
+}
