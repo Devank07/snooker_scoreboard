@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Snooker Control Panel</title>
 <style>
-body {background:#1d1d1d;color:#eee;font-family:Arial;padding:20px;}
-.container{max-width:700px;margin:auto;}
-.player-box{border:1px solid #444;padding:15px;border-radius:8px;margin-bottom:20px;transition:0.3s;}
-.player-box.turn{border-color:#ffcc00;box-shadow:0 0 10px #ffcc00;}
-.player-box .title{font-size:1.2rem;margin-bottom:8px;}
-.stat-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-.stat-row label{width:60px;}
-.stat-row .value{min-width:50px;text-align:center;}
-button{padding:6px 12px;border:none;border-radius:5px;background:#3a3a3a;color:#eee;cursor:pointer;}
-button:hover{background:#555;}
-.actions{text-align:center;margin-top:20px;}
-.actions button{margin:0 10px;}
-input[type="text"],input[type="color"]{padding:4px 8px;border-radius:4px;border:none;}
+body { background:#1d1d1d; color:#eee; font-family:Arial; padding:20px; }
+.container { max-width:700px; margin:auto; }
+.player-box { border:1px solid #444; padding:15px; border-radius:8px; margin-bottom:20px; transition:0.3s; }
+.player-box.turn { border-color:#ffcc00; box-shadow:0 0 10px #ffcc00; }
+.player-box .title { font-size:1.2rem; margin-bottom:8px; }
+.stat-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.stat-row label { width:60px; }
+.stat-row .value { min-width:50px; text-align:center; }
+button { padding:6px 12px; border:none; border-radius:5px; background:#3a3a3a; color:#eee; cursor:pointer; }
+button:hover { background:#555; }
+.actions { text-align:center; margin-top:20px; }
+.actions button { margin:0 10px; }
+input[type="text"], input[type="color"] { padding:4px 8px; border-radius:4px; border:none; }
 </style>
 </head>
 <body>
@@ -85,31 +85,81 @@ input[type="text"],input[type="color"]{padding:4px 8px;border-radius:4px;border:
 
 <script>
 let historyStack=[];
-function snapshot(data){historyStack.push(JSON.parse(JSON.stringify(data)));if(historyStack.length>50) historyStack.shift();}
-async function fetchData(){const resp=await fetch("data.json?nocache="+Date.now());return await resp.json();}
-async function pushData(data){const content=JSON.stringify(data,null,2);const blob=new Blob([content],{type:"application/json"});const url=URL.createObjectURL(blob);await fetch("data.json",{method:"PUT",body:content});}
-async function refresh(){const d=await fetchData();
-document.getElementById("p1score").textContent=d.score1||0;
-document.getElementById("p2score").textContent=d.score2||0;
-document.getElementById("p1break").textContent=d.break1||0;
-document.getElementById("p2break").textContent=d.break2||0;
-document.getElementById("p1frames").textContent=d.frames1||0;
-document.getElementById("p2frames").textContent=d.frames2||0;
-document.getElementById("p1fouls").textContent=d.fouls1||0;
-document.getElementById("p2fouls").textContent=d.fouls2||0;
-document.getElementById("p1name").value=d.player1||"";
-document.getElementById("p2name").value=d.player2||"";
-document.getElementById("box1").classList.toggle("turn",d.turn===1);
-document.getElementById("box2").classList.toggle("turn",d.turn===2);
+
+function snapshot(data){historyStack.push(JSON.parse(JSON.stringify(data))); if(historyStack.length>50) historyStack.shift();}
+async function fetchData(){const resp=await fetch("data.json?nocache="+Date.now()); return await resp.json();}
+async function pushData(data){const content=JSON.stringify(data,null,2); await fetch("data.json",{method:"PUT",body:content});}
+
+async function refresh(){
+  const d = await fetchData();
+  document.getElementById("p1score").textContent = d.score1 || 0;
+  document.getElementById("p2score").textContent = d.score2 || 0;
+  document.getElementById("p1break").textContent = d.break1 || 0;
+  document.getElementById("p2break").textContent = d.break2 || 0;
+  document.getElementById("p1frames").textContent = d.frames1 || 0;
+  document.getElementById("p2frames").textContent = d.frames2 || 0;
+  document.getElementById("p1fouls").textContent = d.fouls1 || 0;
+  document.getElementById("p2fouls").textContent = d.fouls2 || 0;
+  document.getElementById("p1name").value = d.player1 || "";
+  document.getElementById("p2name").value = d.player2 || "";
+  document.getElementById("box1").classList.toggle("turn", d.turn===1);
+  document.getElementById("box2").classList.toggle("turn", d.turn===2);
 }
-async function modify(fn){const d=await fetchData();snapshot(d);fn(d);await pushData(d);await refresh();}
-function addBall(player,points){modify(d=>{if(player===1){d.score1=(d.score1||0)+points;d.break1=(d.break1||0)+points;}else{d.score2=(d.score2||0)+points;d.break2=(d.break2||0)+points;}d.turn=player;});}
-function addFoul(player,points){modify(d=>{if(player===1)d.fouls1=(d.fouls1||0)+points;else d.fouls2=(d.fouls2||0)+points;});}
-function resetFrame(){modify(d=>{d.score1=0;d.score2=0;d.break1=0;d.break2=0;});}
-function nextFrame(){modify(d=>{if(d.score1>d.score2)d.frames1=(d.frames1||0)+1;else if(d.score2>d.score1)d.frames2=(d.frames2||0)+1;d.score1=0;d.score2=0;d.break1=0;d.break2=0;});}
-function undo(){if(historyStack.length===0)return;const prev=historyStack.pop();pushData(prev).then(()=>refresh());}
-async function saveAll(){const d=await fetchData();d.player1=document.getElementById("p1name").value;d.player2=document.getElementById("p2name").value;d.logo1=document.getElementById("logo1").value;d.logo2=document.getElementById("logo2").value;d.color1=document.getElementById("color1").value;d.color2=document.getElementById("color2").value;if(d.fouls1===undefined)d.fouls1=0;if(d.fouls2===undefined)d.fouls2=0;await pushData(d);await refresh();}
+
+async function modify(fn){const d = await fetchData(); snapshot(d); fn(d); await pushData(d); await refresh();}
+
+function addBall(player,points){modify(d=>{if(player===1){d.score1=(d.score1||0)+points; d.break1=(d.break1||0)+points;} else {d.score2=(d.score2||0)+points; d.break2=(d.break2||0)+points;} d.turn=player;});}
+function addFoul(player,points){modify(d=>{if(player===1)d.fouls1=(d.fouls1||0)+points; else d.fouls2=(d.fouls2||0)+points;});}
+function resetFrame(){modify(d=>{d.score1=0; d.score2=0; d.break1=0; d.break2=0;});}
+function nextFrame(){modify(d=>{if(d.score1>d.score2)d.frames1=(d.frames1||0)+1; else if(d.score2>d.score1)d.frames2=(d.frames2||0)+1; d.score1=0; d.score2=0; d.break1=0; d.break2=0;});}
+function undo(){if(historyStack.length===0)return; const prev=historyStack.pop(); pushData(prev).then(()=>refresh());}
+async function saveAll(){
+  const d=await fetchData();
+  d.player1=document.getElementById("p1name").value;
+  d.player2=document.getElementById("p2name").value;
+  d.logo1=document.getElementById("logo1").value;
+  d.logo2=document.getElementById("logo2").value;
+  d.color1=document.getElementById("color1").value;
+  d.color2=document.getElementById("color2").value;
+  if(d.fouls1===undefined)d.fouls1=0;
+  if(d.fouls2===undefined)d.fouls2=0;
+  await pushData(d);
+  await refresh();
+}
+
+// Keyboard shortcuts
+document.addEventListener("keydown", ev => {
+    switch(ev.key.toLowerCase()) {
+        case "1": addBall(1,1); break;
+        case "2": addBall(1,2); break;
+        case "3": addBall(1,3); break;
+        case "4": addBall(1,4); break;
+        case "5": addBall(1,5); break;
+        case "6": addBall(1,6); break;
+        case "7": addBall(1,7); break;
+        case "q": addBall(2,1); break;
+        case "w": addBall(2,2); break;
+        case "e": addBall(2,3); break;
+        case "r": addBall(2,4); break;
+        case "t": addBall(2,5); break;
+        case "y": addBall(2,6); break;
+        case "u": addBall(2,7); break;
+        case "f": addFoul(1,4); break;
+        case "g": addFoul(1,5); break;
+        case "h": addFoul(1,6); break;
+        case "j": addFoul(1,7); break;
+        case "v": addFoul(2,4); break;
+        case "b": addFoul(2,5); break;
+        case "n": addFoul(2,6); break;
+        case "m": addFoul(2,7); break;
+        case "z": undo(); break;
+        case "x": nextFrame(); break;
+        case "c": resetFrame(); break;
+    }
+});
+
 refresh();
 </script>
 </body>
 </html>
+
